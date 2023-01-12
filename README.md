@@ -1,2 +1,2 @@
-# otus_java
+# otus-java
 Repository for works on the course Java Developer Professional
