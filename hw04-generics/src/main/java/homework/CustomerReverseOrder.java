@@ -2,10 +2,11 @@ package homework;
 
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class CustomerReverseOrder {
 
-    private final ArrayDeque<Customer> deque = new ArrayDeque<>();
+    private final Deque<Customer> deque = new ArrayDeque<>();
 
     public void add(Customer customer) {
         deque.add(customer);
