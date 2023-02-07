@@ -10,9 +10,6 @@ package ru.calculator;
 -Xlog:gc=debug:file=./logs/gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m
 */
 
-
-import java.time.LocalDateTime;
-
 public class CalcDemo {
     public static void main(String[] args) {
         long counter = 1_000_000;
