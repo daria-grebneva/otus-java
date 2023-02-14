@@ -24,32 +24,32 @@ public class LogRunner {
 
     static class DemoInvocationHandler implements InvocationHandler {
         private final TestLoggingInterface testLoggingClass;
+        private final List<Method> loggingMethods;
 
         DemoInvocationHandler(TestLoggingInterface testLoggingClass) {
             this.testLoggingClass = testLoggingClass;
+            this.loggingMethods = getLogMethods(testLoggingClass.getClass().getDeclaredMethods());
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (isCurrentMethodWithLogging(testLoggingClass.getClass(), method)) {
+            if (isCurrentMethodWithLogging(method, loggingMethods)) {
                 System.out.println("executed method: " + method.getName() + ", param:" + getParameters(args));
             }
             return method.invoke(testLoggingClass, args);
         }
-    }
 
-    private static List<Method> getLogMethods(Method[] methods) {
-        return Arrays.stream(methods).filter(m -> m.isAnnotationPresent(Log.class)).toList();
-    }
+        private static List<Method> getLogMethods(Method[] methods) {
+            return Arrays.stream(methods).filter(m -> m.isAnnotationPresent(Log.class)).toList();
+        }
 
-    private static boolean isCurrentMethodWithLogging(Class<?> clazz, Method currentMethod) {
-        final Predicate<Method> methodPredicate = method ->
-                currentMethod.getName().equals(method.getName())
-                && (currentMethod.getParameterCount() == method.getParameterCount());
+        private static boolean isCurrentMethodWithLogging(Method currentMethod, List<Method> loggingMethods) {
+            final Predicate<Method> methodPredicate = method ->
+                    currentMethod.getName().equals(method.getName())
+                            && (currentMethod.getParameterCount() == method.getParameterCount());
 
-        return getLogMethods(clazz.getDeclaredMethods())
-                .stream()
-                .anyMatch(methodPredicate);
+            return loggingMethods.stream().anyMatch(methodPredicate);
+        }
     }
 
     private static List<String> getParameters(Object[] args) {
