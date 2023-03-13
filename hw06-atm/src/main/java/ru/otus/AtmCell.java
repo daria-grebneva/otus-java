@@ -4,7 +4,7 @@ public class AtmCell {
     private final Banknote banknote;
     private int banknoteQuantity;
 
-    public AtmCell(int banknoteDenomination, int banknoteQuantity) {
+    public AtmCell(Denomination banknoteDenomination, int banknoteQuantity) {
         this.banknote = new Banknote(banknoteDenomination);
         this.banknoteQuantity = banknoteQuantity;
     }
@@ -17,7 +17,7 @@ public class AtmCell {
         this.banknoteQuantity = banknoteQuantity;
     }
 
-    public int getBanknoteDenomination() {
+    public Denomination getBanknoteDenomination() {
         return banknote.getDenomination();
     }
 

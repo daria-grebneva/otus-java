@@ -1,13 +1,13 @@
 package ru.otus;
 
 public class Banknote {
-    private final int denomination;
+    private final Denomination denomination;
 
-    public Banknote(int denomination) {
+    public Banknote(Denomination denomination) {
         this.denomination = denomination;
     }
 
-    public int getDenomination() {
+    public Denomination getDenomination() {
         return denomination;
     }
 
@@ -19,17 +19,5 @@ public class Banknote {
         Banknote banknote = (Banknote) o;
 
         return getDenomination() == banknote.getDenomination();
-    }
-
-    @Override
-    public int hashCode() {
-        return getDenomination();
-    }
-
-    @Override
-    public String toString() {
-        return "Banknote{" +
-                "denomination=" + denomination +
-                '}';
     }
 }

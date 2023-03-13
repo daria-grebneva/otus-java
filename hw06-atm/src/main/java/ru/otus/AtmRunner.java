@@ -4,12 +4,12 @@ import java.util.List;
 
 public class AtmRunner {
     public static void main(String[] args) {
-        Atm atm = new Atm();
-        atm.addCell(1000, 8);
-        atm.addCell(5000, 10);
-        atm.addCell(100, 7);
-        atm.addCell(2000, 5);
-        atm.addCell(500, 15);
+        AtmImpl atm = new AtmImpl();
+        atm.addCell(Denomination.ONE_THOUSAND, 8);
+        atm.addCell(Denomination.FIVE_THOUSAND, 10);
+        atm.addCell(Denomination.ONE_HUNDRED, 7);
+        atm.addCell(Denomination.TWO_THOUSAND, 5);
+        atm.addCell(Denomination.FIVE_HUNDRED, 15);
 
         System.out.println("ATM balance " + atm.getAtmBalance());
 

@@ -1,21 +1,22 @@
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.otus.Atm;
+import ru.otus.AtmImpl;
+import ru.otus.Denomination;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
-public class TestAtm {
-    private Atm atm = null;
+public class TestAtmImpl {
+    private AtmImpl atm = null;
 
     @BeforeEach
     public void setUpAtm() {
-        atm = new Atm();
-        atm.addCell(1000, 8);
-        atm.addCell(5000, 10);
-        atm.addCell(100, 7);
-        atm.addCell(2000, 5);
-        atm.addCell(500, 15);
+        atm = new AtmImpl();
+        atm.addCell(Denomination.ONE_THOUSAND, 8);
+        atm.addCell(Denomination.FIVE_THOUSAND, 10);
+        atm.addCell(Denomination.ONE_HUNDRED, 7);
+        atm.addCell(Denomination.TWO_THOUSAND, 5);
+        atm.addCell(Denomination.FIVE_HUNDRED, 15);
     }
 
     @AfterEach
