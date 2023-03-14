@@ -1,15 +1,19 @@
 package ru.otus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AtmRunner {
     public static void main(String[] args) {
-        AtmImpl atm = new AtmImpl();
-        atm.addCell(Denomination.ONE_THOUSAND, 8);
-        atm.addCell(Denomination.FIVE_THOUSAND, 10);
-        atm.addCell(Denomination.ONE_HUNDRED, 7);
-        atm.addCell(Denomination.TWO_THOUSAND, 5);
-        atm.addCell(Denomination.FIVE_HUNDRED, 15);
+        Map<Denomination, Integer> moneyMap = new HashMap<>();
+        moneyMap.put(Denomination.ONE_THOUSAND, 8);
+        moneyMap.put(Denomination.FIVE_THOUSAND, 10);
+        moneyMap.put(Denomination.ONE_HUNDRED, 7);
+        moneyMap.put(Denomination.TWO_THOUSAND, 5);
+        moneyMap.put(Denomination.FIVE_HUNDRED, 15);
+        
+        AtmImpl atm = new AtmImpl(moneyMap);
 
         System.out.println("ATM balance " + atm.getAtmBalance());
 

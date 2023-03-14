@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import ru.otus.AtmImpl;
 import ru.otus.Denomination;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 public class TestAtmImpl {
@@ -11,12 +14,14 @@ public class TestAtmImpl {
 
     @BeforeEach
     public void setUpAtm() {
-        atm = new AtmImpl();
-        atm.addCell(Denomination.ONE_THOUSAND, 8);
-        atm.addCell(Denomination.FIVE_THOUSAND, 10);
-        atm.addCell(Denomination.ONE_HUNDRED, 7);
-        atm.addCell(Denomination.TWO_THOUSAND, 5);
-        atm.addCell(Denomination.FIVE_HUNDRED, 15);
+        Map<Denomination, Integer> moneyMap = new HashMap<>();
+        moneyMap.put(Denomination.ONE_THOUSAND, 8);
+        moneyMap.put(Denomination.FIVE_THOUSAND, 10);
+        moneyMap.put(Denomination.ONE_HUNDRED, 7);
+        moneyMap.put(Denomination.TWO_THOUSAND, 5);
+        moneyMap.put(Denomination.FIVE_HUNDRED, 15);
+
+        atm = new AtmImpl(moneyMap);
     }
 
     @AfterEach

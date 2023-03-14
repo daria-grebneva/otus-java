@@ -5,8 +5,9 @@ import java.util.*;
 public class AtmImpl implements Atm {
     private final MoneyVault moneyVault;
 
-    public AtmImpl() {
+    public AtmImpl(Map<Denomination, Integer> money) {
         moneyVault = new MoneyVault();
+        money.forEach(this::addCell);
     }
 
     @Override
