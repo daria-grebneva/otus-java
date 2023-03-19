@@ -6,3 +6,5 @@ include 'hw04-gc'
 include 'hw05-logging'
 include 'hw06-atm'
 include 'hw07-message-handler:homework'
+include 'hw08-json-handler:homework'
+
