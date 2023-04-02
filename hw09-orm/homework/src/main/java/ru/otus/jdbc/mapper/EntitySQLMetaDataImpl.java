@@ -19,7 +19,8 @@ public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
     @Override
     public String getSelectByIdSql() {
         String idFieldName = entityClassMetaDataObject.getIdField().getName();
-        return "select * from " + entityClassMetaDataObject.getName().toLowerCase() + " where " + idFieldName + " = ?";
+        List<Field> fieldList = entityClassMetaDataObject.getFieldsWithoutId();
+        return "select " + idFieldName + "," + getFieldsNamesWithDelimiter(fieldList, ",") + " from " + entityClassMetaDataObject.getName().toLowerCase() + " where " + idFieldName + " = ?";
     }
 
     @Override
