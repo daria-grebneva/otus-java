@@ -24,8 +24,8 @@ public class Client implements Cloneable {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
-    private Address client_address;
+    @JoinColumn(name = "address_id", referencedColumnName="id")
+    private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "client_id")

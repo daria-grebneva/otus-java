@@ -4,21 +4,21 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
-@Data
 @NoArgsConstructor
+@Data
 @Entity
 @Table(name = "address")
 public class Address  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id")
+    @Column(name = "id")
     private long id;
 
     @Column(name = "street")
     private String street;
 
-    @OneToOne(mappedBy = "client_address")
+    @OneToOne(mappedBy = "address")
     private Client client;
 
     public Address(Long id, String street) {
