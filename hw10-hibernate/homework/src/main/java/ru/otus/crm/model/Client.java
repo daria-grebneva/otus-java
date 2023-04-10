@@ -1,14 +1,29 @@
 package ru.otus.crm.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Setter;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "client")
 public class Client implements Cloneable {
@@ -23,13 +38,13 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id", referencedColumnName="id")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumn(name = "client_id")
-    private List<Phone> phone;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "client_id", nullable = false, updatable = false)
+    private List<Phone> phones;
 
     public Client(String name) {
         this.id = null;
@@ -43,6 +58,26 @@ public class Client implements Cloneable {
 
     @Override
     public Client clone() {
-        return new Client(this.id, this.name);
+        return new Client(this.id, this.name, getClonedAddress(this.address), getClonedPhones(this.phones));
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address=" + address +
+                ", phones=" + phones +
+                '}';
+    }
+
+    private Address getClonedAddress(Address address) {
+        return new Address(address.getId(), address.getStreet());
+    }
+
+    private List<Phone> getClonedPhones(List<Phone> phones) {
+        List<Phone> copiedPhones = new ArrayList<>();
+        phones.forEach(p -> copiedPhones.add(new Phone(p.getId(), p.getNumber())));
+        return copiedPhones;
     }
 }

@@ -1,11 +1,18 @@
 package ru.otus.crm.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "address")
 public class Address  {
@@ -13,13 +20,10 @@ public class Address  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "street")
     private String street;
-
-    @OneToOne(mappedBy = "address")
-    private Client client;
 
     public Address(Long id, String street) {
         this.id = id;
@@ -33,9 +37,4 @@ public class Address  {
                 ", street='" + street + '\'' +
                 '}';
     }
-
-//    @Override
-//    public Address clone() {
-//        return new Address(this.id, this.street);
-//    }
 }
