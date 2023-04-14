@@ -57,7 +57,11 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             var objectList = new ArrayList<T>();
             try {
                 while (rs.next()) {
-                    T obj = (T) entityClassMetaData.getConstructor().newInstance(rs.getLong(getIdFieldName()), getFieldsValuesFromFromDb(rs));
+                    List<String> l = getFieldsValuesFromFromDb(rs);
+                    // TODO:: спросить, как данное место можно улучшить, получаю IllegalArgumentException
+                    T obj = (l.size() > 1)
+                            ? (T) entityClassMetaData.getConstructor().newInstance(rs.getLong(getIdFieldName()), l.get(0), l.get(1))
+                            : (T) entityClassMetaData.getConstructor().newInstance(rs.getLong(getIdFieldName()), l.get(0));
                     objectList.add(obj);
                 }
                 return objectList;
