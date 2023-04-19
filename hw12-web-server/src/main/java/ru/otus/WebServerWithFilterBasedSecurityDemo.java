@@ -7,7 +7,7 @@ import ru.otus.core.repository.DataTemplateHibernate;
 import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
 import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
-import ru.otus.crm.service.DbServiceClientImpl;
+import ru.otus.crm.service.ClientDaoImpl;
 import ru.otus.dao.InMemoryUserDao;
 import ru.otus.dao.UserDao;
 import ru.otus.model.Address;
@@ -20,6 +20,8 @@ import ru.otus.services.TemplateProcessorImpl;
 import ru.otus.services.UserAuthService;
 import ru.otus.services.UserAuthServiceImpl;
 
+import java.util.Collections;
+
 /*
     Полезные для демо ссылки
 
@@ -27,10 +29,10 @@ import ru.otus.services.UserAuthServiceImpl;
     http://localhost:8080
 
     // Страница пользователей
-    http://localhost:8080/users
+    http://localhost:8080/client
 
     // REST сервис
-    http://localhost:8080/api/user/3
+    http://localhost:8080/api/clients
 */
 public class WebServerWithFilterBasedSecurityDemo {
     private static final int WEB_SERVER_PORT = 8080;
@@ -46,15 +48,22 @@ public class WebServerWithFilterBasedSecurityDemo {
 
         new MigrationsExecutorFlyway(dbUrl, dbUserName, dbPassword).executeMigrations();
 
-        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Client.class, Address.class, Phone.class);
+        var sessionFactory = HibernateUtils.buildSessionFactory(configuration, Address.class, Client.class, Phone.class);
 
         var transactionManager = new TransactionManagerHibernate(sessionFactory);
 
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
 
-        var clientDao = new DbServiceClientImpl(transactionManager, clientTemplate);
+        var clientDao = new ClientDaoImpl(transactionManager, clientTemplate);
+
+
+        Client client1 = new Client(1L, "Daria", new Address(1L, "Sovetskaya 116"), Collections.singletonList(new Phone(1L, "+79111234565")));
+        Client client2 = new Client(2L, "Maria", new Address(2L, "Sovetskaya 16"), Collections.singletonList(new Phone(2L, "+79231234515")));
+        clientDao.saveClient(client1);
+        clientDao.saveClient(client2);
 
         UserDao userDao = new InMemoryUserDao();
+
         Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
         TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
         UserAuthService authService = new UserAuthServiceImpl(userDao);
