@@ -22,9 +22,9 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
     private final DbExecutor dbExecutor;
     private final EntitySQLMetaData entitySQLMetaData;
 
-    private final EntityClassMetaData entityClassMetaData;
+    private final EntityClassMetaData<T> entityClassMetaData;
 
-    public DataTemplateJdbc(DbExecutor dbExecutor, EntitySQLMetaData entitySQLMetaData, EntityClassMetaData entityClassMetaData) {
+    public DataTemplateJdbc(DbExecutor dbExecutor, EntitySQLMetaData entitySQLMetaData, EntityClassMetaData<T> entityClassMetaData) {
         this.dbExecutor = dbExecutor;
         this.entitySQLMetaData = entitySQLMetaData;
         this.entityClassMetaData = entityClassMetaData;
@@ -58,10 +58,9 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             try {
                 while (rs.next()) {
                     List<String> l = getFieldsValuesFromFromDb(rs);
-                    // TODO:: спросить, как данное место можно улучшить, получаю IllegalArgumentException
-                    T obj = (l.size() > 1)
-                            ? (T) entityClassMetaData.getConstructor().newInstance(rs.getLong(getIdFieldName()), l.get(0), l.get(1))
-                            : (T) entityClassMetaData.getConstructor().newInstance(rs.getLong(getIdFieldName()), l.get(0));
+                    Object[] constructorArguments = getConstructorArguments(rs, l);
+
+                    T obj = (T) entityClassMetaData.getConstructor().newInstance(constructorArguments);
                     objectList.add(obj);
                 }
                 return objectList;
@@ -71,6 +70,13 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
                 throw new RuntimeException(e);
             }
         }).orElseThrow(() -> new RuntimeException("Unexpected error"));
+    }
+
+    private Object[] getConstructorArguments(ResultSet rs, List<String> l) throws SQLException {
+        var objList = new ArrayList<>();
+        objList.add(rs.getLong(getIdFieldName()));
+        objList.addAll(l);
+        return objList.toArray();
     }
 
     @Override
@@ -119,9 +125,7 @@ public class DataTemplateJdbc<T> implements DataTemplate<T> {
             try {
                 Object obj = method.invoke(client);
                 valuesList.add(obj != null ? obj : "");
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }

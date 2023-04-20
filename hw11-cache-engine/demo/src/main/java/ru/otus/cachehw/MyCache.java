@@ -8,8 +8,8 @@ import java.util.WeakHashMap;
 
 public class MyCache<K, V> implements HwCache<K, V> {
 //Надо реализовать эти методы
-    private Map<K, V> cache = new WeakHashMap<>();
-    private List<HwListener> listeners = new ArrayList<>();
+    private final Map<K, V> cache = new WeakHashMap<>();
+    private final List<HwListener> listeners = new ArrayList<>();
 
     @Override
     public void put(K key, V value) {
@@ -40,8 +40,13 @@ public class MyCache<K, V> implements HwCache<K, V> {
     }
 
     private void notifyListeners(K key, V value, String action) {
-        for (HwListener listener : listeners) {
-            listener.notify(key, value, action);
+        try {
+            for (HwListener listener : listeners) {
+                listener.notify(key, value, action);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error during notification: " + e);
         }
+
     }
 }
