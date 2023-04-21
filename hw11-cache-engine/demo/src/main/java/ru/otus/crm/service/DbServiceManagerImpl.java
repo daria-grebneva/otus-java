@@ -72,7 +72,7 @@ public class DbServiceManagerImpl implements DBServiceManager {
     }
 
     private static String getKeyForCache(Long key) {
-        return ("keyManager:" + key).intern();
+        return "keyManager:" + key;
     }
 
     private Optional<Manager> getManagerFromDb(long no) {

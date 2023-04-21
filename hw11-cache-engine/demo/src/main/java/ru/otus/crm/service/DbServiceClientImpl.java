@@ -33,22 +33,19 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     @Override
     public Client saveClient(Client client) {
-        try {
-            clientCache.addListener(clientListener);
-            return transactionRunner.doInTransaction(connection -> {
-                if (client.getId() == null) {
-                    var clientId = dataTemplate.insert(connection, client);
-                    var createdClient = new Client(clientId, client.getName());
-                    log.info("created client: {}", createdClient);
-                    return createdClient;
-                }
-                dataTemplate.update(connection, client);
-                log.info("updated client: {}", client);
-                return client;
-            });
-        } finally {
-            clientCache.removeListener(clientListener);
-        }
+        return transactionRunner.doInTransaction(connection -> {
+            if (client.getId() == null) {
+                var clientId = dataTemplate.insert(connection, client);
+                var createdClient = new Client(clientId, client.getName());
+                log.info("created client: {}", createdClient);
+                clientCache.put(getKeyForCache(clientId), createdClient);
+                return createdClient;
+            }
+            dataTemplate.update(connection, client);
+            clientCache.put(getKeyForCache(client.getId()), client);
+            log.info("updated client: {}", client);
+            return client;
+        });
     }
 
     @Override
@@ -78,7 +75,7 @@ public class DbServiceClientImpl implements DBServiceClient {
     }
 
     private static String getKeyForCache(Long key) {
-        return ("keyClient:" + key).intern();
+        return "keyClient:" + key;
     }
 
     private Optional<Client> getClientFromDb(long id) {
