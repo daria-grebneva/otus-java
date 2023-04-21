@@ -9,13 +9,13 @@ import ru.otus.model.Client;
 import java.util.List;
 import java.util.Optional;
 
-public class ClientDaoImpl implements ClientDao {
-    private static final Logger log = LoggerFactory.getLogger(ClientDaoImpl.class);
+public class DBServiceClientImpl implements DBServiceClient {
+    private static final Logger log = LoggerFactory.getLogger(DBServiceClientImpl.class);
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
 
-    public ClientDaoImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
+    public DBServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
     }

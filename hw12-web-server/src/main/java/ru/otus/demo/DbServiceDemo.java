@@ -8,7 +8,7 @@ import ru.otus.core.repository.HibernateUtils;
 import ru.otus.core.sessionmanager.TransactionManagerHibernate;
 import ru.otus.crm.dbmigrations.MigrationsExecutorFlyway;
 import ru.otus.model.Client;
-import ru.otus.crm.service.ClientDaoImpl;
+import ru.otus.crm.service.DBServiceClientImpl;
 
 public class DbServiceDemo {
 
@@ -31,7 +31,7 @@ public class DbServiceDemo {
 ///
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
 ///
-        var dbServiceClient = new ClientDaoImpl(transactionManager, clientTemplate);
+        var dbServiceClient = new DBServiceClientImpl(transactionManager, clientTemplate);
         dbServiceClient.saveClient(new Client("dbServiceFirst"));
 
         var clientSecond = dbServiceClient.saveClient(new Client("dbServiceSecond"));

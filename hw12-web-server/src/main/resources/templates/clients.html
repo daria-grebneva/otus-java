@@ -4,7 +4,6 @@
     <script>
         function getClientList() {
             const clientDataContainer = document.getElementById('clientDataContainer');
-            //fetch('api/client?id=' + id)
             fetch('api/clients')
                 .then(response => response.json())
                 .then(clients => clientDataContainer.innerHTML = JSON.stringify(clients));
@@ -17,7 +16,7 @@
 <button onclick="getClientList()">Получить список клиентов</button>
 <pre id = "clientDataContainer"></pre>
 <h5>Добавить нового клиента</h5>
-<form action="/api/clients?action=submit" method="post">
+<form action="/client?action=submit" method="post">
     <label for="clientName">Имя клиента:</label>
     <input type="text" id="clientName" name="clientName"><br><br>
     <label for="clientAddress">Адрес клиента:</label>
