@@ -51,7 +51,7 @@ public class WebServerWithFilterBasedSecurityRunner {
 
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
 
-        var clientDao = new DBServiceClientImpl(transactionManager, clientTemplate);
+        var clientService = new DBServiceClientImpl(transactionManager, clientTemplate);
 
         UserDao userDao = new InMemoryUserDao();
 
@@ -60,7 +60,7 @@ public class WebServerWithFilterBasedSecurityRunner {
         UserAuthService authService = new UserAuthServiceImpl(userDao);
 
         WebServer webServer = new ru.otus.server.WebServerWithFilterBasedSecurity(WEB_SERVER_PORT,
-                authService, clientDao, gson, templateProcessor);
+                authService, clientService, gson, templateProcessor);
 
         webServer.start();
         webServer.join();
