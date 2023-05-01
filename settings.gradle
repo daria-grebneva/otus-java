@@ -9,6 +9,6 @@ include 'hw07-message-handler:homework'
 include 'hw08-json-handler:homework'
 include 'hw09-orm:demo'
 include 'hw09-orm:homework'
+include 'hw10-hibernate:homework'
 include 'hw11-cache-engine:demo'
 include 'hw11-cache-engine:homework'
-
