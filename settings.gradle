@@ -12,3 +12,5 @@ include 'hw09-orm:homework'
 include 'hw10-hibernate:homework'
 include 'hw11-cache-engine:demo'
 include 'hw11-cache-engine:homework'
+include 'hw13-ioc-container:homework'
+
