@@ -45,6 +45,12 @@ public class Client implements Cloneable {
         this.name = name;
     }
 
+    public Client(String name, Address address, List<Phone> phones) {
+        this.name = name;
+        this.address = address;
+        this.phones = phones;
+    }
+
     @Override
     public Client clone() {
         return new Client(this.id, this.name, getClonedAddress(this.address), getClonedPhones(this.phones));
