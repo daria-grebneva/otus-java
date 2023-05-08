@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Клиенты</title>
+    <script>
+        function getClientList() {
+            const clientDataContainer = document.getElementById('clientDataContainer');
+            fetch('api/clients')
+                .then(response => response.json())
+                .then(clients => clientDataContainer.innerHTML = JSON.stringify(clients));
+        }
+    </script>
+</head>
+
+<body>
+<h4>Страница по работе с клиентами</h4>
+<button onclick="getClientList()">Получить список клиентов</button>
+<pre id = "clientDataContainer"></pre>
+<h5>Добавить нового клиента</h5>
+<form action="/client" method="post">
+    <label for="clientName">Имя клиента:</label>
+    <input type="text" id="clientName" name="clientName"><br><br>
+    <label for="clientAddress">Адрес клиента:</label>
+    <input type="text" id="clientAddress" name="clientAddress"><br><br>
+    <label for="clientPhone">Телефон клиента:</label>
+    <input type="text" id="clientPhone" name="clientPhone"><br><br>
+    <button type="submit">Создать нового клиента</button>
+</form>
+</body>
+</html>
