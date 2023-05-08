@@ -31,14 +31,9 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         parsedMethods.forEach((m) -> {
             checkForDuplicates(uniqueComponentNames, m);
             try {
-                Method[] methods = configClass.getDeclaredMethods();
-                for (Method method : methods) {
-                    if (Objects.equals(m.getName(), method.getName())) {
-                        Object component = method.invoke(config, getComponentParameters(method));
-                        appComponents.add(component);
-                        appComponentsByName.put(component.getClass().getSimpleName(), component);
-                    }
-                }
+                Object component = m.invoke(config, getComponentParameters(m));
+                appComponents.add(component);
+                appComponentsByName.put(component.getClass().getSimpleName(), component);
             } catch (InvocationTargetException | IllegalAccessException e) {
                 LOGGER.error("Not possible to invoke method of this instance ", e);
             }
