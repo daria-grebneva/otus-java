@@ -1,6 +1,5 @@
 package ru.otus.appcontainer;
 
-import com.google.common.collect.TreeMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
@@ -11,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
@@ -26,17 +24,17 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private void processConfig(Class<?> configClass) {
         checkConfigClass(configClass);
 
-        TreeMultimap<Integer, String> methodsMultiMap = getParsedAnnotations(configClass);
+        List<Method> parsedMethods = getParsedAnnotations(configClass);
         Object config = initializeConfig(configClass);
+        Set<String> uniqueComponentNames = new HashSet<>();
 
-        methodsMultiMap.forEach((t, v) -> {
+        parsedMethods.forEach((m) -> {
+            checkForDuplicates(uniqueComponentNames, m);
             try {
                 Method[] methods = configClass.getDeclaredMethods();
                 for (Method method : methods) {
-                    if (Objects.equals(v, method.getName())) {
-                        Object component = (method.getParameterCount() > 0)
-                                ? method.invoke(config, getComponentParameters(method))
-                                : method.invoke(config);
+                    if (Objects.equals(m.getName(), method.getName())) {
+                        Object component = method.invoke(config, getComponentParameters(method));
                         appComponents.add(component);
                         appComponentsByName.put(component.getClass().getSimpleName(), component);
                     }
@@ -45,6 +43,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                 LOGGER.error("Not possible to invoke method of this instance ", e);
             }
         });
+    }
+
+    private void checkForDuplicates(Set<String> uniqueComponentNames, Method m) {
+        String componentName = m.getAnnotation(AppComponent.class).name();
+
+        if (uniqueComponentNames.contains(componentName)) {
+            throw new RuntimeException("Found components with the same names");
+        } else {
+            uniqueComponentNames.add(componentName);
+        }
     }
 
     private Object[] getComponentParameters(Method method) {
@@ -68,18 +76,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         return o;
     }
 
-    private static TreeMultimap<Integer, String> getParsedAnnotations(Class<?> configClass) {
-        TreeMultimap<Integer, String> methodsMultiMap = TreeMultimap.create();
-        Arrays.stream(configClass.getDeclaredMethods()).forEach(m -> {
-            Arrays.stream(m.getDeclaredAnnotations()).forEach(annotation -> {
-                AppComponent appComponent = ((AppComponent) annotation);
-                if (methodsMultiMap.containsValue(appComponent.name())) {
-                    throw new RuntimeException("Found components with the same names");
-                }
-                methodsMultiMap.put(appComponent.order(), appComponent.name());
-            });
-        });
-        return methodsMultiMap;
+    private static List<Method> getParsedAnnotations(Class<?> configClass) {
+        return Arrays.stream(configClass.getDeclaredMethods()).
+                filter(m -> m.isAnnotationPresent(AppComponent.class))
+                .sorted(Comparator.comparingInt(m -> m.getAnnotation(AppComponent.class).order()))
+                .toList();
     }
 
     private void checkConfigClass(Class<?> configClass) {
@@ -91,7 +92,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
 
-        List<Object> componentList = appComponents.stream().filter(c -> c.getClass().getSimpleName().contains(componentClass.getSimpleName())).collect(Collectors.toList());
+        List<Object> componentList = appComponents.stream().filter(c -> componentClass.isAssignableFrom(c.getClass())).toList();
         if (componentList.size() > 1) {
             throw new RuntimeException("Duplicated components were found");
         } else if (componentList.size() < 1) {
