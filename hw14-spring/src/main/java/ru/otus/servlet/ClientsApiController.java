@@ -13,12 +13,12 @@ import java.util.List;
 
 
 @Controller
-public class ClientsApiServlet {
+public class ClientsApiController {
 
     private final DBServiceClient dbServiceClient;
     private final Gson gson;
 
-    public ClientsApiServlet(DBServiceClient dbServiceClient, Gson gson) {
+    public ClientsApiController(DBServiceClient dbServiceClient, Gson gson) {
         this.dbServiceClient = dbServiceClient;
         this.gson = gson;
     }

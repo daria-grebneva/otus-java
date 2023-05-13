@@ -9,14 +9,14 @@ import ru.otus.model.Client;
 import ru.otus.model.Phone;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Set;
 
 @Controller
-public class ClientsServlet {
+public class ClientsController {
 
     private final DBServiceClient dbServiceClient;
 
-    public ClientsServlet(DBServiceClient dbServiceClient) {
+    public ClientsController(DBServiceClient dbServiceClient) {
         this.dbServiceClient = dbServiceClient;
     }
 
@@ -28,9 +28,9 @@ public class ClientsServlet {
     @PostMapping("/client")
     protected RedirectView doPost(@RequestParam(value = "clientName") String clientName, @RequestParam(value = "clientAddress") String clientAddress, @RequestParam(value = "clientPhone") String clientPhone) throws IOException {
 
-        Address address = new Address(clientAddress);
-        Phone phone = new Phone(clientPhone);
-        Client client = new Client(clientName, address, Collections.singletonList(phone));
+        Address address = new Address(clientAddress, null);
+        Phone phone = new Phone(clientPhone, null);
+        Client client = new Client(clientName, address, Set.of(phone));
         dbServiceClient.saveClient(client);
         return new RedirectView("/client", true);
     }
