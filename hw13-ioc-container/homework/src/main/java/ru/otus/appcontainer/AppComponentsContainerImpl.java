@@ -24,40 +24,32 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private void processConfig(Class<?> configClass) {
         checkConfigClass(configClass);
 
-        List<Method> parsedMethods = getParsedAnnotations(configClass);
+        List<Method> parsedMethods = getAnnotatedMethods(configClass);
         Object config = initializeConfig(configClass);
-        Set<String> uniqueComponentNames = new HashSet<>();
 
         parsedMethods.forEach((m) -> {
-            checkForDuplicates(uniqueComponentNames, m);
+            String componentName = m.getAnnotation(AppComponent.class).name().toLowerCase();
+
+            if (appComponentsByName.containsKey(componentName)) {
+                throw new RuntimeException("Found components with the same names");
+            }
+
             try {
                 Object component = m.invoke(config, getComponentParameters(m));
                 appComponents.add(component);
-                appComponentsByName.put(component.getClass().getSimpleName(), component);
+                appComponentsByName.put(componentName, component);
             } catch (InvocationTargetException | IllegalAccessException e) {
-                LOGGER.error("Not possible to invoke method of this instance ", e);
+                throw new RuntimeException("Not possible to invoke method of this instance", e);
             }
         });
     }
 
-    private void checkForDuplicates(Set<String> uniqueComponentNames, Method m) {
-        String componentName = m.getAnnotation(AppComponent.class).name();
-
-        if (uniqueComponentNames.contains(componentName)) {
-            throw new RuntimeException("Found components with the same names");
-        } else {
-            uniqueComponentNames.add(componentName);
-        }
-    }
-
     private Object[] getComponentParameters(Method method) {
         Parameter[] parameters = method.getParameters();
-        List<Object> paramsList = new ArrayList<>();
-        for (Parameter parameter : parameters) {
-            Object param = this.getAppComponent(parameter.getType().getSimpleName());
-            paramsList.add(param);
-        }
-        return paramsList.toArray();
+
+        return Arrays.stream(parameters)
+                .map(p -> this.getAppComponent(p.getType().getSimpleName()))
+                .toArray();
     }
 
     private static Object initializeConfig(Class<?> configClass) {
@@ -66,12 +58,12 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             o = configClass.getConstructor().newInstance();
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException e) {
-            LOGGER.error("Not possible to call instance of class ", e);
+            throw new RuntimeException("Not possible to call instance of class ", e);
         }
         return o;
     }
 
-    private static List<Method> getParsedAnnotations(Class<?> configClass) {
+    private static List<Method> getAnnotatedMethods(Class<?> configClass) {
         return Arrays.stream(configClass.getDeclaredMethods()).
                 filter(m -> m.isAnnotationPresent(AppComponent.class))
                 .sorted(Comparator.comparingInt(m -> m.getAnnotation(AppComponent.class).order()))
@@ -99,13 +91,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(String componentName) {
-        Object component = null;
-
-        for (Map.Entry<String, Object> e : appComponentsByName.entrySet()) {
-            if (e.getKey().toLowerCase().contains(componentName.toLowerCase())) {
-                component = e.getValue();
-            }
-        }
+        Object component = appComponentsByName.get(componentName.toLowerCase());
 
         if (component != null) {
             return (C) component;
