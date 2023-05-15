@@ -1,6 +1,5 @@
 package ru.otus.model;
 
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.relational.core.mapping.MappedCollection;
@@ -9,20 +8,19 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.HashSet;
 import java.util.Set;
 
-@NoArgsConstructor
 @Table(name = "client")
 public class Client implements Cloneable {
 
     @Id
-    private Long id;
+    private final Long id;
 
-    private String name;
-
-    @MappedCollection(idColumn = "client_id")
-    private Address address;
+    private final String name;
 
     @MappedCollection(idColumn = "client_id")
-    private Set<Phone> phones;
+    private final Address address;
+
+    @MappedCollection(idColumn = "client_id")
+    private final Set<Phone> phones;
 
     public Client(String name, Address address, Set<Phone> phones) {
         this.id = null;
