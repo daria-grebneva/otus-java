@@ -1,7 +1,5 @@
 package ru.otus.appcontainer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
@@ -13,7 +11,6 @@ import java.util.*;
 
 public class AppComponentsContainerImpl implements AppComponentsContainer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppComponentsContainerImpl.class);
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
 
@@ -24,11 +21,11 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private void processConfig(Class<?> configClass) {
         checkConfigClass(configClass);
 
-        List<Method> parsedMethods = getAnnotatedMethods(configClass);
+        List<Method> annotatedMethods = getAnnotatedMethods(configClass);
         Object config = initializeConfig(configClass);
 
-        parsedMethods.forEach((m) -> {
-            String componentName = m.getAnnotation(AppComponent.class).name().toLowerCase();
+        annotatedMethods.forEach((m) -> {
+            String componentName = m.getAnnotation(AppComponent.class).name();
 
             if (appComponentsByName.containsKey(componentName)) {
                 throw new RuntimeException("Found components with the same names");
@@ -48,12 +45,12 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         Parameter[] parameters = method.getParameters();
 
         return Arrays.stream(parameters)
-                .map(p -> this.getAppComponent(p.getType().getSimpleName()))
+                .map(p -> getAppComponent(p.getType()))
                 .toArray();
     }
 
     private static Object initializeConfig(Class<?> configClass) {
-        Object o = null;
+        Object o;
         try {
             o = configClass.getConstructor().newInstance();
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
@@ -91,7 +88,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(String componentName) {
-        Object component = appComponentsByName.get(componentName.toLowerCase());
+        Object component = appComponentsByName.get(componentName);
 
         if (component != null) {
             return (C) component;
