@@ -21,6 +21,7 @@ allprojects {
             }
             dependency "com.google.guava:guava:${Versions.guava}"
             dependency("org.glassfish:jakarta.json:${Versions.glassfishJson}")
+            dependency("org.springdoc:springdoc-openapi-starter-webmvc-ui:${Versions.springDocOpenapiUi}")
         }
     }
 }
