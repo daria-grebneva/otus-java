@@ -13,5 +13,6 @@ include 'hw10-hibernate:homework'
 include 'hw11-cache-engine:demo'
 include 'hw11-cache-engine:homework'
 include 'hw12-web-server'
+include 'hw13-ioc-container:homework'
 include 'hw14-spring'
 
