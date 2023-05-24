@@ -33,9 +33,9 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
         dataBuffer.add(data);
     }
 
-    public void flush() {
+    public synchronized void flush() {
         try {
-            if (dataBuffer.size() != 0) {
+            if (!dataBuffer.isEmpty()) {
                 List<SensorData> bufferedData = new ArrayList<>();
 
                 dataBuffer.drainTo(bufferedData);
