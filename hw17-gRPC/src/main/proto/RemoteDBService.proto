@@ -4,15 +4,17 @@ package ru.otus.protobuf.generated;
 
 option java_multiple_files = true;
 
-message UserMessage {
-    int64 id = 1;
-    string firstName = 2;
-    string lastName = 3;
+message ValuesForGeneration {
+    int32 firstValue = 1;
+    int32 lastValue = 2;
+}
+
+message GeneratedValueMessage {
+    int32 value = 1;
 }
 
 message Empty {}
 
 service RemoteDBService {
-    rpc saveUser(UserMessage) returns (UserMessage);
-    rpc findAllUsers(Empty) returns (stream UserMessage);
+    rpc getGeneratedValues(ValuesForGeneration) returns (stream GeneratedValueMessage);
 }

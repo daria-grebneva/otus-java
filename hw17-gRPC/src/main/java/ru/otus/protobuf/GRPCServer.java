@@ -1,10 +1,7 @@
 package ru.otus.protobuf;
 
 
-import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import ru.otus.protobuf.service.RealDBService;
-import ru.otus.protobuf.service.RealDBServiceImpl;
 import ru.otus.protobuf.service.RemoteDBServiceImpl;
 
 import java.io.IOException;
@@ -15,8 +12,7 @@ public class GRPCServer {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        var dbService = new RealDBServiceImpl();
-        var remoteDBService = new RemoteDBServiceImpl(dbService);
+        var remoteDBService = new RemoteDBServiceImpl();
 
         var server = ServerBuilder
                 .forPort(SERVER_PORT)
