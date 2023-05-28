@@ -17,3 +17,5 @@ include 'hw13-ioc-container:homework'
 include 'hw14-spring'
 include 'hw15-sequence-of-numbers'
 include 'hw16-queues'
+include 'hw17-gRPC'
+
