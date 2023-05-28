@@ -33,13 +33,15 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
         dataBuffer.add(data);
     }
 
-    public synchronized void flush() {
+    public void flush() {
         try {
             if (!dataBuffer.isEmpty()) {
                 List<SensorData> bufferedData = new ArrayList<>();
 
                 dataBuffer.drainTo(bufferedData);
-                writer.writeBufferedData(bufferedData);
+                if (!bufferedData.isEmpty()) {
+                    writer.writeBufferedData(bufferedData);
+                }
             }
         } catch (Exception e) {
             log.error("Ошибка в процессе записи буфера", e);
