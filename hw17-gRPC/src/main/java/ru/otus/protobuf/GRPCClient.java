@@ -13,6 +13,7 @@ public class GRPCClient {
     private static final int FIRST_VALUE = 0;
     private static final int LAST_SERVER_VALUE = 30;
     private static final int LAST_CLIENT_VALUE = 50;
+    private static final Object CURRENT_VALUE_LOCK = new Object();
     public static int currentValueFromServer = 0;
 
     public static void main(String[] args) throws InterruptedException {
@@ -28,7 +29,9 @@ public class GRPCClient {
                 new StreamObserver<>() {
                     @Override
                     public void onNext(GeneratedValueMessage value) {
-                        currentValueFromServer = value.getValue();
+                        synchronized (CURRENT_VALUE_LOCK) {
+                            currentValueFromServer = value.getValue();
+                        }
                     }
 
                     @Override
@@ -51,9 +54,11 @@ public class GRPCClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            currentValue = currentValue + currentValueFromServer + 1;
-            System.out.println("currentValue:" + currentValue);
-            currentValueFromServer = 0;
+            synchronized (CURRENT_VALUE_LOCK) {
+                currentValue = currentValue + currentValueFromServer + 1;
+                System.out.println("currentValue:" + currentValue);
+                currentValueFromServer = 0;
+            }
         }
 
         latch.await();
