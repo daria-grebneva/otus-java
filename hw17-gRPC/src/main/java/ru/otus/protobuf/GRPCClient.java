@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import ru.otus.protobuf.generated.*;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class GRPCClient {
 
@@ -13,8 +14,7 @@ public class GRPCClient {
     private static final int FIRST_VALUE = 0;
     private static final int LAST_SERVER_VALUE = 30;
     private static final int LAST_CLIENT_VALUE = 50;
-    private static final Object CURRENT_VALUE_LOCK = new Object();
-    public static int currentValueFromServer = 0;
+    public static AtomicLong currentValueFromServer = new AtomicLong(0);
 
     public static void main(String[] args) throws InterruptedException {
         var channel = ManagedChannelBuilder.forAddress(SERVER_HOST, SERVER_PORT)
@@ -29,9 +29,7 @@ public class GRPCClient {
                 new StreamObserver<>() {
                     @Override
                     public void onNext(GeneratedValueMessage value) {
-                        synchronized (CURRENT_VALUE_LOCK) {
-                            currentValueFromServer = value.getValue();
-                        }
+                       currentValueFromServer.set(value.getValue());
                     }
 
                     @Override
@@ -46,19 +44,18 @@ public class GRPCClient {
                     }
                 }
         );
-        int currentValue = FIRST_VALUE;
 
-        for (int i = currentValue; i < LAST_CLIENT_VALUE + 1; i++) {
+        long currentValue = FIRST_VALUE;
+
+        for (long i = currentValue; i < LAST_CLIENT_VALUE + 1; i++) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            synchronized (CURRENT_VALUE_LOCK) {
-                currentValue = currentValue + currentValueFromServer + 1;
-                System.out.println("currentValue:" + currentValue);
-                currentValueFromServer = 0;
-            }
+
+            currentValue = currentValue + currentValueFromServer.getAndSet(0) + 1;
+            System.out.println("currentValue:" + currentValue);
         }
 
         latch.await();
