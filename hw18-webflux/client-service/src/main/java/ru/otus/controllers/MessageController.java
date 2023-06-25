@@ -22,6 +22,7 @@ public class MessageController {
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
 
     private static final String TOPIC_TEMPLATE = "/topic/response.";
+    private static final String ROOM_FOR_ALL_MESSAGES = "1408";
 
     private final WebClient datastoreClient;
     private final SimpMessagingTemplate template;
@@ -34,13 +35,17 @@ public class MessageController {
     @MessageMapping("/message.{roomId}")
     public void getMessage(@DestinationVariable String roomId, Message message) {
         logger.info("get message:{}, roomId:{}", message, roomId);
-        saveMessage(roomId, message)
-                .subscribe(msgId -> logger.info("message send id:{}", msgId));
 
-        template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, roomId),
-                new Message(HtmlUtils.htmlEscape(message.messageStr())));
+        if (ROOM_FOR_ALL_MESSAGES.equals(roomId)) {
+            logger.error("impossible to post messages in this room");
+        } else {
+            saveMessage(roomId, message)
+                    .subscribe(msgId -> logger.info("message send id:{}", msgId));
+
+            sendMessage(message, roomId);
+            sendMessage(message, ROOM_FOR_ALL_MESSAGES);
+        }
     }
-
 
     @EventListener
     public void handleSessionSubscribeEvent(SessionSubscribeEvent event) {
@@ -71,6 +76,11 @@ public class MessageController {
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(message)
                 .exchangeToMono(response -> response.bodyToMono(Long.class));
+    }
+
+    private void sendMessage(Message message, String room) {
+        template.convertAndSend(String.format("%s%s", TOPIC_TEMPLATE, room),
+                new Message(HtmlUtils.htmlEscape(message.messageStr())));
     }
 
     private Flux<Message> getMessagesByRoomId(long roomId) {
