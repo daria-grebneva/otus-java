@@ -19,7 +19,6 @@ import ru.otus.service.DataStore;
 @RestController
 public class DataController {
     private static final Logger log = LoggerFactory.getLogger(DataController.class);
-    private static final String ROOM_FOR_ALL_MESSAGES = "1408";
     private final DataStore dataStore;
     private final Scheduler workerPool;
 
@@ -48,18 +47,20 @@ public class DataController {
     @GetMapping(value = "/msg/{roomId}", produces = MediaType.APPLICATION_NDJSON_VALUE)
     public Flux<MessageDto> getMessagesByRoomId(@PathVariable("roomId") String roomId) {
 
-        if (ROOM_FOR_ALL_MESSAGES.equals(roomId)) {
-            log.info("getAllMessages", roomId);
-            return dataStore.getAllMessages()
-                    .publishOn(workerPool)
-                    .map(message -> new MessageDto(message.getMsgText()))
-                    .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
-                    .subscribeOn(workerPool);
-        }
-
         return Mono.just(roomId)
                 .doOnNext(room -> log.info("getMessagesByRoomId, room:{}", room))
                 .flatMapMany(dataStore::loadMessages)
+                .map(message -> new MessageDto(message.getMsgText()))
+                .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
+                .subscribeOn(workerPool);
+    }
+
+    @GetMapping(value = "/msg/allMessages", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<MessageDto> getAllMessages() {
+
+        log.info("getAllMessages");
+        return dataStore.getAllMessages()
+                .publishOn(workerPool)
                 .map(message -> new MessageDto(message.getMsgText()))
                 .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
                 .subscribeOn(workerPool);
