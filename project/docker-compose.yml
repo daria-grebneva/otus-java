@@ -1,0 +1,18 @@
+version: '3'
+services:
+  postgres:
+    container_name: pg-docker
+    hostname: pg-docker
+    build: ./docker/postgres
+    ports:
+      - "5430:5432"
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c max_connections=200
+    environment:
+      - POSTGRES_USER=usr
+      - POSTGRES_PASSWORD=pwd
+      - POSTGRES_DB=demoDB
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

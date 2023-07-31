@@ -20,4 +20,8 @@ include 'hw16-queues'
 include 'hw17-gRPC'
 include 'hw18-webflux:client-service'
 include 'hw18-webflux:datastore-service'
+include 'project:investor'
+include 'project:stock-market'
+include 'project:commonModel'
+findProject(':project:commonModel')?.name = 'commonModel'
 

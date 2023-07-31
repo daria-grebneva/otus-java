@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5430/demoDB
+    username: usr
+    password: pwd
+  flyway:
+    enabled: true
+  rabbitmq:
+    addresses: "localhost"
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+logging:
+  level:
+    org.springframework.jdbc.core.JdbcTemplate: TRACE
