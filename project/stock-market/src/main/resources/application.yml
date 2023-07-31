@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5430/demoDB
+    username: usr
+    password: pwd
+  rabbitmq:
+    addresses: "localhost"
+    listener:
+      simple:
+        prefetch: 1
+      direct:
+        prefetch: 1
+server:
+  port: 8081
